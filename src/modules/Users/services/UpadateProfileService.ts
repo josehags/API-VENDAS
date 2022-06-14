@@ -49,7 +49,7 @@ class UpdateProfileService {
     }
 
     user.name = name;
-    user.name = email;
+    user.email = email;
 
     await usersRepository.save(user);
 

@@ -1,4 +1,4 @@
-//Criação de produtos
+//Criação de usuario
 
 import AppError from '@shared/errors/appError';
 import { hash } from 'bcryptjs';
