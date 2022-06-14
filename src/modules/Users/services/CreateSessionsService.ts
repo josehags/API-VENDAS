@@ -23,7 +23,7 @@ class CreateSessionsService {
     const user = await userRepository.findByEmail(email);
 
     if (!user) {
-      throw new AppError('EIncorrect email/password combinnation.', 401);
+      throw new AppError('Incorrect email/password combinnation.', 401);
     }
 
     const passwordConfirmed = await compare(password, user.password);
