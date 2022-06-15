@@ -3,10 +3,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import Customer from '@modules/customers/typeorm/entities/Customer';
+import OrdersProducts from './OrdersProducts';
 
 @Entity('orders')
 class Order {
@@ -15,8 +17,13 @@ class Order {
 
   //junção de um clinte para muitas ordens
   @ManyToOne(() => Customer)
-  @JoinColumn({ name: 'cusatomer_id' })
+  @JoinColumn({ name: 'customer_id' })
   customer: Customer;
+
+  @OneToMany(() => OrdersProducts, order_products => order_products.order, {
+    cascade: true,
+  })
+  order_products: OrdersProducts[];
 
   @CreateDateColumn()
   created_at: Date;
