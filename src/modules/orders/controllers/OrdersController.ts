@@ -1,12 +1,12 @@
-import ShowProductService from '@modules/products/services/ShowProductService';
 import { Request, Response } from 'express';
-import CreateOrderService from '../service/CreateOrderService';
+import CreateOrderService from '../services/CreateOrderService';
+import ShowOrderService from '../services/ShowOrderService';
 
 export default class OrdersController {
   public async show(request: Request, response: Response): Promise<Response> {
     const { id } = request.params;
 
-    const showOrder = new ShowProductService();
+    const showOrder = new ShowOrderService();
 
     const order = await showOrder.execute({ id });
 
