@@ -16,11 +16,11 @@ interface IPaginateCustomer {
 class ListCustomerService {
   public async execute(): Promise<IPaginateCustomer> {
     const customersRepository = getCustomRepository(CustomersRepository);
+    const customers = await customersRepository
+      .createQueryBuilder('customer')
+      .paginate();
 
-    //o find retorna uma lista de clientes
-    const customers = await customersRepository.createQueryBuilder().paginate();
     return customers as IPaginateCustomer;
   }
 }
-
 export default ListCustomerService;
