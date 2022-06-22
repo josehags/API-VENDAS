@@ -1,0 +1,1 @@
+// só usa como dominio
