@@ -1,40 +1,46 @@
-import AppError from '@shared/errors/appError';
-import path from 'path';
-import fs from 'fs';
 import { getCustomRepository } from 'typeorm';
 import User from '../typeorm/entities/User';
 import UsersRepository from '../typeorm/repositories/UsersRepository';
 import uploadConfig from '@config/upload';
 import DiskStorageProvider from '@shared/providers/StorageProvider/DiskStorageProvider';
+import S3StorageProvider from '@shared/providers/StorageProvider/S3StorageProvider';
+import AppError from '@shared/errors/appError';
 
-//está tipando as informações que está recebendo
 interface IRequest {
     user_id: string;
-    avatarFileName: string;
+    avatarFilename: string;
 }
 
 class UpdateUserAvatarService {
-    public async execute({ user_id, avatarFileName }: IRequest): Promise<User> {
-        const userRepository = getCustomRepository(UsersRepository);
+    public async execute({ user_id, avatarFilename }: IRequest): Promise<User> {
+        const usersRepository = getCustomRepository(UsersRepository);
 
-        const strorageProvider = new DiskStorageProvider();
-
-        const user = await userRepository.findById(user_id);
+        const user = await usersRepository.findById(user_id);
 
         if (!user) {
             throw new AppError('User not found.');
         }
-        if (user.avatar) {
-            await strorageProvider.deleteFile(user.avatar);
+
+        if (uploadConfig.driver === 's3') {
+            const s3Provider = new S3StorageProvider();
+            if (user.avatar) {
+                await s3Provider.deleteFile(user.avatar);
+            }
+            const filename = await s3Provider.saveFile(avatarFilename);
+            user.avatar = filename;
+        } else {
+            const diskProvider = new DiskStorageProvider();
+            if (user.avatar) {
+                await diskProvider.deleteFile(user.avatar);
+            }
+            const filename = await diskProvider.saveFile(avatarFilename);
+            user.avatar = filename;
         }
 
-        const filename = await strorageProvider.saveFile(avatarFileName);
-
-        user.avatar = filename;
-
-        await userRepository.save(user);
+        await usersRepository.save(user);
 
         return user;
     }
 }
+
 export default UpdateUserAvatarService;
