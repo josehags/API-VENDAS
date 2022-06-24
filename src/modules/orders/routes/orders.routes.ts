@@ -9,25 +9,25 @@ const ordersController = new OrdersController();
 ordersRouter.use(isAuthenticated);
 
 ordersRouter.get(
-  '/:id',
-  celebrate({
-    [Segments.PARAMS]: {
-      id: Joi.string().uuid().required(),
-    },
-  }),
-  ordersController.show,
+    '/:id',
+    celebrate({
+        [Segments.PARAMS]: {
+            id: Joi.string().uuid().required(),
+        },
+    }),
+    ordersController.show,
 );
 
 // Validando rotas
 ordersRouter.post(
-  '/',
-  celebrate({
-    [Segments.BODY]: {
-      customer_id: Joi.string().uuid().required(),
-      products: Joi.required(),
-    },
-  }),
-  ordersController.create,
+    '/',
+    celebrate({
+        [Segments.BODY]: {
+            customer_id: Joi.string().uuid().required(),
+            products: Joi.required(),
+        },
+    }),
+    ordersController.create,
 );
 
 export default ordersRouter;
