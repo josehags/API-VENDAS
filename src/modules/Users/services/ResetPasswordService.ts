@@ -1,42 +1,45 @@
+import { inject, injectable } from 'tsyringe';
 import AppError from '@shared/errors/appError';
-import { getCustomRepository } from 'typeorm';
 import { hash } from 'bcryptjs';
 import { isAfter, addHours } from 'date-fns';
-import UsersRepository from '../typeorm/repositories/UsersRepository';
-import UsersTokensRepository from '../typeorm/repositories/UsersTokensRepository';
+import { IResetPassword } from '../domain/models/IResetPassword';
+import { IUsersRepository } from '../domain/repositories/IUsersRepository';
+import { IUserTokensRepository } from '../domain/repositories/IUserTokensRepository';
 
-//está tipando as informações que está recebendo
-interface IRequest {
-  token: string;
-  password: string;
-}
-
+@injectable()
 class ResetPasswordService {
-  public async execute({ token, password }: IRequest): Promise<void> {
-    const userRepository = getCustomRepository(UsersRepository);
-    const userTokenRepositoty = getCustomRepository(UsersTokensRepository);
+    constructor(
+        @inject('UsersRepository')
+        private usersRepository: IUsersRepository,
 
-    const userToken = await userTokenRepositoty.findByToken(token);
+        @inject('UserTokensRepository')
+        private userTokensRepository: IUserTokensRepository,
+    ) {}
 
-    if (!userToken) {
-      throw new AppError('User token does not exists');
+    public async execute({ token, password }: IResetPassword): Promise<void> {
+        const userToken = await this.userTokensRepository.findByToken(token);
+
+        if (!userToken) {
+            throw new AppError('User Token does not exists.');
+        }
+
+        const user = await this.usersRepository.findById(userToken.user_id);
+
+        if (!user) {
+            throw new AppError('User does not exists.');
+        }
+
+        const tokenCreatedAt = userToken.created_at;
+        const compareDate = addHours(tokenCreatedAt, 2);
+
+        if (isAfter(Date.now(), compareDate)) {
+            throw new AppError('Token expired.');
+        }
+
+        user.password = await hash(password, 8);
+
+        await this.usersRepository.save(user);
     }
-
-    const user = await userRepository.findById(userToken.user_id);
-
-    if (!user) {
-      throw new AppError('User does not exists');
-    }
-    const tokenCreatedAt = userToken.created_at;
-    const compareDate = addHours(tokenCreatedAt, 2);
-
-    if (isAfter(Date.now(), compareDate)) {
-      throw new AppError('Token expired.');
-    }
-    // como saber se usar o await, se usa quando o metodo for async ou retorna uma promesa
-    user.password = await hash(password, 8);
-
-    await userRepository.save(user); // salvando
-  }
 }
+
 export default ResetPasswordService;
