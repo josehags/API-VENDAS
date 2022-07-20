@@ -4,13 +4,13 @@ import {
     Entity,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
-} from 'typeorm';
-import { Exclude, Expose } from 'class-transformer';
-import { IUser } from '@modules/Users/domain/models/IUser';
+} from "typeorm";
+import { Exclude, Expose } from "class-transformer";
+import { IUser } from "@modules/Users/domain/models/IUser";
 
-@Entity('users')
+@Entity("users")
 class User implements IUser {
-    @PrimaryGeneratedColumn('uuid')
+    @PrimaryGeneratedColumn("uuid")
     id: string;
 
     @Column()
@@ -32,7 +32,7 @@ class User implements IUser {
     @UpdateDateColumn()
     updated_at: Date;
 
-    @Expose({ name: 'avatar_url' })
+    @Expose({ name: "avatar_url" })
     getAvatarUrl(): string | null {
         if (!this.avatar) {
             return null;
