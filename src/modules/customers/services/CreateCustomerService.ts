@@ -1,5 +1,3 @@
-//Criação de clientes
-
 import AppError from '@shared/errors/appError';
 import { inject, injectable } from 'tsyringe';
 import { ICreateCustomer } from '../domain/models/ICreateCustomer';

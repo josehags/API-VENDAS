@@ -1,4 +1,4 @@
-// import { pathsToModuleNameMapper } from 'ts-jest/node_modules/.bin';
+// import { pathsToModuleNameMapper } from 'ts-jest/utils';
 // import { compilerOptions } from './tsconfig.json';
 /*
  * For a detailed explanation regarding each configuration property and type check, visit:

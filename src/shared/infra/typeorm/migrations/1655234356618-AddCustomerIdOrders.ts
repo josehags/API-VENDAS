@@ -10,7 +10,7 @@ export class AddCustomerIdOrders1655234356618 implements MigrationInterface {
         await queryRunner.addColumn(
             'orders',
             new TableColumn({
-                name: 'customer_id', // quando foi criado
+                name: 'customer_id',
                 type: 'uuid',
                 isNullable: true,
             }),
